@@ -76,7 +76,58 @@ async function run() {
       res.send(result);
     });
 
+    // app.put("/tasks/:id", async (req, res) => {
+
+    //   const { id } = req.params;
+    //   const { title, description, category, order } = req.body;
+    
+    //   const filter = { _id: new ObjectId(id) };
+    //   const updateDoc = {
+    //     $set: {
+    //       title,
+    //       description,
+    //       category,
+    //       order,
+    //     },
+    //   };
+    
+    //   const result = await taskCollection.updateOne(filter, updateDoc);
+    
+    //   if (result.modifiedCount > 0) {
+    //     const updatedTask = await taskCollection.findOne(filter);
+    //     res.send(updatedTask);
+    //   } else {
+    //     res.status(404).send("Task not found or no changes made");
+    //   }
+    // });
+
     // DELETE: Delete a task
+    
+    app.put("/tasks/:id", async (req, res) => {
+      const { id } = req.params;
+      const { title, description, category, order } = req.body;
+    
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          title,
+          description,
+          category,
+          order,
+        },
+      };
+    
+      const result = await taskCollection.updateOne(filter, updateDoc);
+    
+      if (result.modifiedCount > 0) {
+        const updatedTask = await taskCollection.findOne(filter);
+        res.send(updatedTask);
+      } else {
+        res.status(404).send("Task not found or no changes made");
+      }
+    });
+
+
     app.delete("/tasks/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
