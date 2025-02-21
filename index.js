@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 // middleware
@@ -29,6 +29,62 @@ async function run() {
     // await client.connect();
 
     const taskCollection = client.db("taskDB").collection('tasks');
+    const userCollection = client.db("taskDB").collection('users');
+
+
+    // API to save user data
+    app.post("/api/users", async (req, res) => {
+        const user = req.body;
+       // Check if user already exists
+        const query = { uid: user.uid };
+        const existingUser = await userCollection.findOne(query);
+       if (existingUser) {
+          return res.send({ message: "User already exists", insertedId: null });
+        }
+        // Insert new user
+        const result = await userCollection.insertOne(user);
+        res.send(result);
+      });
+
+       // POST: Add a new task
+    app.post("/tasks", async (req, res) => {
+      const task = req.body;
+      const result = await taskCollection.insertOne(task);
+      res.send(result);
+    });
+
+    // GET: Fetch all tasks
+    app.get("/tasks", async (req, res) => {
+      const tasks = await taskCollection.find().toArray();
+      res.send(tasks);
+    });
+
+    // PUT: Update a task
+    app.put("/tasks/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedTask = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          title: updatedTask.title,
+          description: updatedTask.description,
+          category: updatedTask.category,
+        },
+      };
+      const result = await taskCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
+
+    // DELETE: Delete a task
+    app.delete("/tasks/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await taskCollection.deleteOne(filter);
+      res.send(result);
+    });
+
+  
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
