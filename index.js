@@ -76,30 +76,7 @@ async function run() {
       res.send(result);
     });
 
-    // app.put("/tasks/:id", async (req, res) => {
-
-    //   const { id } = req.params;
-    //   const { title, description, category, order } = req.body;
     
-    //   const filter = { _id: new ObjectId(id) };
-    //   const updateDoc = {
-    //     $set: {
-    //       title,
-    //       description,
-    //       category,
-    //       order,
-    //     },
-    //   };
-    
-    //   const result = await taskCollection.updateOne(filter, updateDoc);
-    
-    //   if (result.modifiedCount > 0) {
-    //     const updatedTask = await taskCollection.findOne(filter);
-    //     res.send(updatedTask);
-    //   } else {
-    //     res.status(404).send("Task not found or no changes made");
-    //   }
-    // });
 
     // DELETE: Delete a task
     
@@ -137,7 +114,7 @@ async function run() {
 
   
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
